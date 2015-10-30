@@ -2077,6 +2077,7 @@ flashcache_map(struct dm_target *ti, struct bio *bio)
 			((dmc->cache_mode == FLASHCACHE_WRITE_AROUND) ||
 			 flashcache_uncacheable(dmc, bio))));
 	spin_unlock_irqrestore(&dmc->ioctl_lock, flags);
+	//如果按照block_size 对齐的bio是不能cache的。
 	if (uncacheable) {
 		flashcache_setlocks_multiget(dmc, bio);
 		queued = flashcache_inval_blocks(dmc, bio);

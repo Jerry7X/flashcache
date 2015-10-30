@@ -1134,6 +1134,7 @@ init:
 	spin_lock_init(&dmc->ioctl_lock);
 	spin_lock_init(&dmc->cache_pending_q_spinlock);
 
+    //IO会根据block_size分割
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3,6,0)
 	ti->split_io = dmc->block_size;
 #else
@@ -1614,8 +1615,8 @@ static struct target_type flashcache_target = {
 	.name   = "flashcache",
 	.version= {1, 0, 4},
 	.module = THIS_MODULE,
-	.ctr    = flashcache_ctr,
-	.dtr    = flashcache_dtr,
+	.ctr    = flashcache_ctr,//create
+	.dtr    = flashcache_dtr,//delete
 	.map    = flashcache_map,
 	.status = flashcache_status,
 	.ioctl 	= flashcache_ioctl,
