@@ -56,13 +56,14 @@ populated into flash and the data returned from the read.
 Since the cache is writeback, a write only writes to flash,
 synchronously updates the cache metadata (to mark the cache block as
 dirty) and completes the write. On a block re-dirty, the metadata
-update is skipped.
+update is skipped.(这里得做好并发，否则可能脏标记没了，数据确是脏的)
 
 It is important to note that in the first cut, cache writes are
 non-atomic, ie, the "Torn Page Problem" exists. In the event of a
 power failure or a failed write, part of the block could be written,
 resulting in a partial write. We have ideas on how to fix this and
-provide atomic cache writes (see the Futures section).
+provide atomic cache writes (see the Futures section).（对于应用这意味着什么？）
+对于假设磁盘有partial write问题的应用来说，这个也许并不会导致什么问题？
 
 Each cache block has on-flash metadata associated with it for cache
 persistence. This per-block metadata consists of the dbn (disk block
@@ -85,6 +86,8 @@ power failure, only DIRTY cache blocks will persist on a subsequent
 cache reload. Node crashes or power failures will not result in data
 loss, but they will result in the cache losing VALID and non-DIRTY
 cached blocks.
+（是否有可能出现一种情况？ 数据被修改了，但是尚未标记dirty，于是在un clean shutdown时候
+只load DIRTY cache block，从而导致使用了 ）
 
 Cache metadata updates are "batched" when possible. So if we have
 pending metadata updates to multiple cache blocks which fall on the
